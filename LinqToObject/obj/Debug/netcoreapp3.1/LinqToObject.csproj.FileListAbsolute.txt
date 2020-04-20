@@ -1,0 +1,13 @@
+C:\Users\khore\source\repos\LinqToObject\LinqToObject\obj\Debug\netcoreapp3.1\LinqToObject.csprojAssemblyReference.cache
+C:\Users\khore\source\repos\LinqToObject\LinqToObject\obj\Debug\netcoreapp3.1\LinqToObject.csproj.CoreCompileInputs.cache
+C:\Users\khore\source\repos\LinqToObject\LinqToObject\obj\Debug\netcoreapp3.1\LinqToObject.AssemblyInfoInputs.cache
+C:\Users\khore\source\repos\LinqToObject\LinqToObject\obj\Debug\netcoreapp3.1\LinqToObject.AssemblyInfo.cs
+C:\Users\khore\source\repos\LinqToObject\LinqToObject\bin\Debug\netcoreapp3.1\LinqToObject.exe
+C:\Users\khore\source\repos\LinqToObject\LinqToObject\bin\Debug\netcoreapp3.1\LinqToObject.deps.json
+C:\Users\khore\source\repos\LinqToObject\LinqToObject\bin\Debug\netcoreapp3.1\LinqToObject.runtimeconfig.json
+C:\Users\khore\source\repos\LinqToObject\LinqToObject\bin\Debug\netcoreapp3.1\LinqToObject.runtimeconfig.dev.json
+C:\Users\khore\source\repos\LinqToObject\LinqToObject\bin\Debug\netcoreapp3.1\LinqToObject.dll
+C:\Users\khore\source\repos\LinqToObject\LinqToObject\bin\Debug\netcoreapp3.1\LinqToObject.pdb
+C:\Users\khore\source\repos\LinqToObject\LinqToObject\obj\Debug\netcoreapp3.1\LinqToObject.dll
+C:\Users\khore\source\repos\LinqToObject\LinqToObject\obj\Debug\netcoreapp3.1\LinqToObject.pdb
+C:\Users\khore\source\repos\LinqToObject\LinqToObject\obj\Debug\netcoreapp3.1\LinqToObject.genruntimeconfig.cache
