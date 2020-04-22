@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 
 namespace LinqToObject
 {
@@ -85,7 +85,7 @@ namespace LinqToObject
                 new System.Text.RegularExpressions.Regex(@"Visual (Basic|C#|C\+\+|Studio)");
 
             var queryMatchingFiles =
-                from file 
+                from file
                 in fileList
                 where file.Extension == ".htm"
                 let fileText = System.IO.File.ReadAllText(file.FullName)
@@ -164,14 +164,14 @@ namespace LinqToObject
             {
                 var scoreQuery = from line in source
                                  let fields = line.Split(',')
-                                 orderby fields[num]  descending//ascending
+                                 orderby fields[num] descending//ascending
                                  select line;
 
                 return scoreQuery;
 
             }
         }
-        
+
         public void SortData()
         {
             string[] scores = File.ReadAllLines(@"C:/Users/khore/source/repos/LinqToObject/spreadsheet1.txt");
@@ -237,13 +237,164 @@ namespace LinqToObject
             }
         }
 
-        
+        public class Student
+        {
+            public int ID { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public List<int> ExamScores { get; set; }
+        }
+
+        public void PopulateCollection()
+        {
+            string[] names = System.IO.File.ReadAllLines(@"C:/Users/khore/source/repos/LinqToObject/spreadsheet1.txt");
+            string[] scores = System.IO.File.ReadAllLines(@"C:/Users/khore/source/repos/LinqToObject/scores.txt");
+
+            IEnumerable<Student> queryNameScores =
+                from nameLine in names
+                let splitName = nameLine.Split(',')
+                from scoreLine in scores
+                let splitScoreLine = scoreLine.Split(',')
+                where Convert.ToInt32(splitName[2]) == Convert.ToInt32(splitScoreLine[0])
+                select new Student()
+                {
+                    FirstName = splitName[0],
+                    LastName = splitName[1],
+                    ID = Convert.ToInt32(splitName[2]),
+                    ExamScores = (from scoreAsText in splitScoreLine.Skip(1)
+                                  select Convert.ToInt32(scoreAsText))
+                                  .ToList()
+                };
+
+            List<Student> students = queryNameScores.ToList();
+
+            foreach (var item in students)
+            {
+                Console.WriteLine($"The average score of {item.FirstName} {item.LastName} is {item.ExamScores.Average()} ");
+            }
+        }
+
+        public void SplitWithGroups()
+        {
+            string[] fileA = System.IO.File.ReadAllLines(@"C:/Users/khore/source/repos/LinqToObject/names1.txt");
+            string[] fileB = System.IO.File.ReadAllLines(@"C:/Users/khore/source/repos/LinqToObject/names2.txt");
+
+            var mergeQuery = fileA.Union(fileB);
+
+            var groupQuery = from name in mergeQuery
+                             let n = name.Split(',')
+                             group name by n[0][0] into g
+                             orderby g.Key
+                             select g;
+
+            foreach (var item in groupQuery)
+            {
+                string fileName = @"C:/Users/khore/source/repos/LinqToObject/testFile_" + item.Key + ".txt";
+
+                Console.WriteLine(item.Key);
+
+                using (System.IO.StreamWriter streamWriter = new System.IO.StreamWriter(fileName))
+                {
+                    foreach (var item2 in item)
+                    {
+                        streamWriter.WriteLine(item2);
+
+                        Console.WriteLine($"{item2}");
+                    }
+                }
+            }
+        }
+
+        public void JoinStrings()
+        {
+            string[] names = System.IO.File.ReadAllLines(@"C:/Users/khore/source/repos/LinqToObject/spreadsheet1.txt");
+            string[] scores = System.IO.File.ReadAllLines(@"C:/Users/khore/source/repos/LinqToObject/scores.txt");
+
+            IEnumerable<string> scoreQuery1 =
+                from name in names
+                let nameFields = name.Split(',')
+                from id in scores
+                let scoreFields = id.Split(',')
+                where Convert.ToInt32(nameFields[2]) == Convert.ToInt32(scoreFields[0])
+                select $"{nameFields[0]}, {scoreFields[1]}, {scoreFields[2]}, {scoreFields[3]} {scoreFields[4]}";
+
+            OutputQueryResults(scoreQuery1, "Merge two spreadsheets");
+
+            void OutputQueryResults(IEnumerable<string> query,  string message)
+            {
+                Console.WriteLine(Environment.NewLine + message);
+
+                foreach (string item in query)
+                {
+                    Console.WriteLine(item);
+                }
+                Console.WriteLine($"{query.Count()} total names in list");
+            }
+        }
+
+        public void SumColumns()
+        {
+            string[] lines = System.IO.File.ReadAllLines(@"C:/Users/khore/source/repos/LinqToObject/scores.txt");
+
+            int exam = 3;
+            SingleColumn(lines, exam + 1);
+            Console.WriteLine();
+            MultiColumns(lines);
+
+            void SingleColumn(IEnumerable<string> strs, int examNum)
+            {
+                Console.WriteLine("Single Column Query: ");
+
+                var columnQuery =
+                    from line in strs
+                    let elements = line.Split(',')
+                    select Convert.ToInt32(elements[examNum]);
+
+                var results = columnQuery.ToList();
+
+                double average = results.Average();
+                int max = results.Max();
+                int min = results.Min();
+
+                Console.WriteLine($"Exam #{examNum}: Average:{average:##.##} " +
+                    $"Hig Score:{max} Low Score {min}");
+            }
+
+            void MultiColumns(IEnumerable<string> strs)
+            {
+                Console.WriteLine("Multi Column Query:");
+
+                IEnumerable<IEnumerable<int>> multiColumns =
+                    from line in strs
+                    let element = line.Split(',')
+                    let scores = element.Skip(1)
+                    select (from str in scores
+                            select Convert.ToInt32(str));
+
+                var results = multiColumns.ToList();
+                int columnCount = results[0].Count();
+
+                for (int column = 0; column < columnCount; column++)
+                {
+                    var results2 = from row in results
+                                   select row.ElementAt(column);
+
+                    double average = results2.Average();
+                    int max = results2.Max();
+                    int min = results2.Min();
+
+                    Console.WriteLine($"Exam #{column+1}: Average:{average:##.##} " +
+                        $"Hig Score:{max} Low Score {min}");
+                }
+            }
+
+        }
     }
     class Program
     {
         static void Main(string[] args)
         {
-            new Q().MergeStrings();
+            new Q().SumColumns();
         }
     }
 }
