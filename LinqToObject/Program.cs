@@ -148,9 +148,11 @@ namespace LinqToObject
 
         public void SortLines()
         {
-            string[] scores = System.IO.File.ReadAllLines(@"C:/Users/khore/source/repos/LinqToObject/scores.txt");
+            string[] scores = File.ReadAllLines(@"C:/Users/khore/source/repos/LinqToObject/scores.txt");
 
+            // Change this to any value from 0 to 4.  
             int sortField = 4;
+
             Console.WriteLine($"Sorted highest to lowest by field [{sortField}]");
 
             foreach (var item in RunQuery(scores, sortField))
@@ -169,12 +171,79 @@ namespace LinqToObject
 
             }
         }
+        
+        public void SortData()
+        {
+            string[] scores = File.ReadAllLines(@"C:/Users/khore/source/repos/LinqToObject/spreadsheet1.txt");
+
+            IEnumerable<string> query =
+                from line in scores
+                let x = line.Split(',')
+                orderby x[1]
+                select $"{x[2]} {x[1]} {x[0]}";
+
+            File.WriteAllLines(@"C:/Users/khore/source/repos/LinqToObject/spreadsheet2.txt", query.ToArray());
+
+            Console.WriteLine("Spreadsheet2.csv written to disk. Press any key to exit");
+
+        }
+
+        public void MergeStrings()
+        {
+            string[] fileA = System.IO.File.ReadAllLines(@"C:/Users/khore/source/repos/LinqToObject/names1.txt");
+            string[] fileB = System.IO.File.ReadAllLines(@"C:/Users/khore/source/repos/LinqToObject/names2.txt");
+
+            IEnumerable<string> concatQuery =
+                fileA.Concat(fileB).OrderBy(s => s);
+
+            OutputQueryResults(concatQuery, "Simple concatenate and sort. Duplicates are preserved:");
+
+            IEnumerable<string> uniqueNamesQuery =
+                fileA.Union(fileB).OrderBy(s => s);
+
+            OutputQueryResults(uniqueNamesQuery, "Union removes duplicate names:");
+
+            IEnumerable<string> commonNamesQuery =
+                fileA.Intersect(fileB);
+            OutputQueryResults(commonNamesQuery, "Merge based on intersect:");
+
+            string nameMatch = "Garcia";
+
+            IEnumerable<string> tempQuery1 =
+                from name1 in fileA
+                let n1 = name1.Split(',')
+                where n1[0] == nameMatch
+                select name1;
+
+            IEnumerable<string> tempQuery2 =
+               from name2 in fileB
+               let n2 = name2.Split(',')
+               where n2[0] == nameMatch
+               select name2;
+
+            IEnumerable<string> nameMatchQuery =
+                tempQuery1.Concat(tempQuery2)
+                .OrderBy(s => s);
+            OutputQueryResults(nameMatchQuery, $"Concat based on partial name match \"{nameMatch}\":");
+
+            void OutputQueryResults(IEnumerable<string> query, string message)
+            {
+                Console.WriteLine(System.Environment.NewLine + message);
+                foreach (var item in query)
+                {
+                    Console.WriteLine(item);
+                }
+                Console.WriteLine($"{query.Count()} total name in list");
+            }
+        }
+
+        
     }
     class Program
     {
         static void Main(string[] args)
         {
-            new Q().SortLines();
+            new Q().MergeStrings();
         }
     }
 }
