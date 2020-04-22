@@ -132,17 +132,41 @@ namespace LinqToObject
 
         public void CompareLists()
         {
-            string[] names1 = System.IO.File.ReadAllLines(@"C:/Users/khore/Desktop/names1.txt");
-            string[] names2 = System.IO.File.ReadAllLines(@"C:/Users/khore/Desktop/names2.txt");
+            string[] names1 = System.IO.File.ReadAllLines(@"C:/Users/khore/source/repos/LinqToObject/names1.txt");
+            string[] names2 = System.IO.File.ReadAllLines(@"C:/Users/khore/source/repos/LinqToObject/names2.txt");
 
             IEnumerable<string> differenceQuery =
                 names1.Except(names2);
 
-            Console.Write("The following lines are in names1.txt but not names2.txt ");
+            Console.WriteLine("The following lines are in names1.txt but not names2.txt ");
 
             foreach (var item in differenceQuery)
             {
                 Console.WriteLine(item);
+            }
+        }
+
+        public void SortLines()
+        {
+            string[] scores = System.IO.File.ReadAllLines(@"C:/Users/khore/source/repos/LinqToObject/scores.txt");
+
+            int sortField = 4;
+            Console.WriteLine($"Sorted highest to lowest by field [{sortField}]");
+
+            foreach (var item in RunQuery(scores, sortField))
+            {
+                Console.WriteLine(item);
+            }
+
+            IEnumerable<string> RunQuery(IEnumerable<string> source, int num)
+            {
+                var scoreQuery = from line in source
+                                 let fields = line.Split(',')
+                                 orderby fields[num]  descending//ascending
+                                 select line;
+
+                return scoreQuery;
+
             }
         }
     }
@@ -150,7 +174,7 @@ namespace LinqToObject
     {
         static void Main(string[] args)
         {
-            new Q().CompareLists();
+            new Q().SortLines();
         }
     }
 }
