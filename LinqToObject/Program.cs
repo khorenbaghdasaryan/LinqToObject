@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace LinqToObject
 {
@@ -387,14 +388,178 @@ namespace LinqToObject
                         $"Hig Score:{max} Low Score {min}");
                 }
             }
+        }
 
+        public void IntroToLINQ()
+        {
+            int[] numbers = new int[10] { 5, 10, 8, 3, 6, 12, 6, 7, 8, 9 };
+            //8ms -9
+            var numQuery =
+                from num in numbers
+                where (num % 2) == 0
+                orderby num
+                select num;
+            //fast 5ms -6
+            IEnumerable<int> numQuery2 = numbers
+                .Where(num => num % 2 == 0)
+                .OrderBy(n => n);
+
+            foreach (int item in numQuery)
+            {
+                Console.Write($"{item}  ");
+            }
+            Console.WriteLine();
+            foreach (int item in numQuery2)
+            {
+                Console.Write($"{item}  ");
+            }
+        }
+
+        class Students
+        {
+            public string First { get; set; }
+            public string Last { get; set; }
+            public int ID { get; set; }
+            public string Street { get; set; }
+            public string City { get; set; }
+            public List<int> Scores;
+        }
+
+        class Teachers
+        {
+            public string First { get; set; }
+            public string Last { get; set; }
+            public int ID { get; set; }
+            public string City { get; set; }
+        }
+        public void DataTransformations()
+        {
+            List<Students> students = new List<Students>()
+            {
+                new Students 
+                { 
+                    First="Svetlana",
+                    Last="Omelchenko",
+                    ID=111,
+                    Street="123 Main Street",
+                    City="Seattle",
+                    Scores= new List<int> { 97, 92, 81, 60 } 
+                },
+                new Students 
+                { 
+                    First="Claire",
+                    Last="O’Donnell",
+                    ID=112,
+                    Street="124 Main Street",
+                    City="Redmond",
+                    Scores= new List<int> { 75, 84, 91, 39 } 
+                },
+                new Students 
+                { 
+                    First="Sven",
+                    Last="Mortensen",
+                    ID=113,
+                    Street="125 Main Street",
+                    City="Lake City",
+                    Scores= new List<int> { 88, 94, 65, 91 } 
+                },
+            };
+            List<Teachers> teachers = new List<Teachers>()
+            {
+                new Teachers { First="Ann", Last="Beebe", ID=945, City="Seattle" },
+                new Teachers { First="Alex", Last="Robinson", ID=956, City="Redmond" },
+                new Teachers { First="Michiyo", Last="Sato", ID=972, City="Tacoma" }
+            };
+
+            var peopleInSeattle = (
+                from student in students
+                where student.City == "Seattle"
+                select student.Last)
+                .Concat(
+                from teacher in teachers
+                where teacher.City == "Seattle"
+                select teacher.Last);
+
+            Console.WriteLine("The following students and teachers live in Seattle:");
+
+            foreach (var person in peopleInSeattle)
+            {
+                Console.WriteLine(person);
+            }
+
+            var studentsToXML = new XElement
+                ("Root",
+                from student in students
+                let scores = string.Join(",", student.Scores)
+                select new XElement("student",
+                           new XElement("First", student.First),
+                           new XElement("Last", student.Last),
+                           new XElement("Scores", scores)
+                           )
+                );
+
+            Console.WriteLine(studentsToXML);
+        }
+
+        public void FormatQuery()
+        {
+            double[] radii = { 1, 2, 3 };
+
+            IEnumerable<string> query =
+                from rad in radii
+                select $"Area = {rad * rad * Math.PI:F2}";
+
+            foreach (string item in query)
+            {
+                Console.WriteLine(item);
+            }
+        }
+
+        public void ToUp()
+        {
+            string sentence = "the quick brown fox jumps over the lazy dog";
+
+            string[] words = sentence.Split(' ');
+
+            var q3 = from word in words
+                     orderby word.Length
+                     select word;
+
+            foreach (var item in q3)
+            {
+
+            }
+
+            //11ms
+            var query1 = from word in words
+                        group word.ToUpper()
+                        by word.Length
+                        into gr
+                        orderby gr.Key
+                        select new
+                        {
+                            Length = gr.Key,
+                            Words = gr
+                        };
+            //8ms
+            var query2 = words
+                .GroupBy(w => w.Length, w => w.ToUpper())
+                .Select(g => new { Length = g.Key, Words = g })
+                .OrderBy(o => o.Length);
+
+            foreach (var obj in query2)//1
+            {
+                Console.WriteLine("Words of length {0}:", obj.Length);
+                foreach (string word in obj.Words)
+                    Console.WriteLine(word);
+            }
         }
     }
     class Program
     {
         static void Main(string[] args)
         {
-            new Q().SumColumns();
+            new Q().ToUp();
         }
     }
 }
