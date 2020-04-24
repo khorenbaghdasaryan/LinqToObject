@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
@@ -321,7 +322,7 @@ namespace LinqToObject
 
             OutputQueryResults(scoreQuery1, "Merge two spreadsheets");
 
-            void OutputQueryResults(IEnumerable<string> query,  string message)
+            void OutputQueryResults(IEnumerable<string> query, string message)
             {
                 Console.WriteLine(Environment.NewLine + message);
 
@@ -384,7 +385,7 @@ namespace LinqToObject
                     int max = results2.Max();
                     int min = results2.Min();
 
-                    Console.WriteLine($"Exam #{column+1}: Average:{average:##.##} " +
+                    Console.WriteLine($"Exam #{column + 1}: Average:{average:##.##} " +
                         $"Hig Score:{max} Low Score {min}");
                 }
             }
@@ -436,32 +437,32 @@ namespace LinqToObject
         {
             List<Students> students = new List<Students>()
             {
-                new Students 
-                { 
+                new Students
+                {
                     First="Svetlana",
                     Last="Omelchenko",
                     ID=111,
                     Street="123 Main Street",
                     City="Seattle",
-                    Scores= new List<int> { 97, 92, 81, 60 } 
+                    Scores= new List<int> { 97, 92, 81, 60 }
                 },
-                new Students 
-                { 
+                new Students
+                {
                     First="Claire",
                     Last="O’Donnell",
                     ID=112,
                     Street="124 Main Street",
                     City="Redmond",
-                    Scores= new List<int> { 75, 84, 91, 39 } 
+                    Scores= new List<int> { 75, 84, 91, 39 }
                 },
-                new Students 
-                { 
+                new Students
+                {
                     First="Sven",
                     Last="Mortensen",
                     ID=113,
                     Street="125 Main Street",
                     City="Lake City",
-                    Scores= new List<int> { 88, 94, 65, 91 } 
+                    Scores= new List<int> { 88, 94, 65, 91 }
                 },
             };
             List<Teachers> teachers = new List<Teachers>()
@@ -525,33 +526,234 @@ namespace LinqToObject
                      orderby word.Length
                      select word;
 
-            foreach (var item in q3)
-            {
+            var q4 = words
+                .OrderBy(w => w.Length);
 
+            var q5 = from word in words
+                     let w = word.Split(' ')
+                     orderby word.Length
+                     select word;
+
+            var q6 = sentence
+                .Split(' ')
+                .OrderBy(w => w.Length);
+
+            var q11 = sentence
+                .Split(' ')
+                .Where(w => w.Length == 3);
+
+            string[] planets1 = { "Mercury", "Venus", "Earth", "Jupiter" };
+            string[] planets2 = { "Mercury", "Earth", "Mars", "Jupiter" };
+
+            var q7 = planets1//հատումը վերցրած առաջինտ
+                .Except(planets2);
+
+            var q8 = planets1//երկուսի ընդհանուրը
+                .Intersect(planets2);
+
+            var q9 = planets1//երկուսի ընդհանուրը
+               .Intersect(planets2);
+
+            var q10 = planets1//միավորումը երկուսի
+                .Union(planets2);
+
+            foreach (var item in q11)
+            {
+                Console.WriteLine(item);
             }
+
+            Console.WriteLine();
 
             //11ms
             var query1 = from word in words
-                        group word.ToUpper()
-                        by word.Length
+                         group word.ToUpper()
+                         by word.Length
                         into gr
-                        orderby gr.Key
-                        select new
-                        {
-                            Length = gr.Key,
-                            Words = gr
-                        };
+                         orderby gr.Key
+                         select new
+                         {
+                             Length = gr.Key,
+                             Words = gr
+                         };
             //8ms
             var query2 = words
-                .GroupBy(w => w.Length, w => w.ToUpper())
+                .GroupBy(w => w.Length,
+                         w => w.ToUpper())
                 .Select(g => new { Length = g.Key, Words = g })
                 .OrderBy(o => o.Length);
 
-            foreach (var obj in query2)//1
+            //foreach (var obj in query2)//1
+            //{
+            //    Console.WriteLine("Words of length {0}:", obj.Length);
+            //    foreach (string word in obj.Words)
+            //        Console.WriteLine(word);
+            //}
+        }
+
+        class Market
+        {
+            public string Name { get; set; }
+            public string[] Items { get; set; }
+        }
+        public void Markets()
+        {
+            List<Market> markets = new List<Market>
             {
-                Console.WriteLine("Words of length {0}:", obj.Length);
-                foreach (string word in obj.Words)
-                    Console.WriteLine(word);
+                new Market { Name = "Emily's", Items = new string[] { "kiwi", "cheery", "banana" } },
+                new Market { Name = "Kim's", Items = new string[] { "melon", "mango", "olive" } },
+                new Market { Name = "Adam's", Items = new string[] { "kiwi", "apple", "orange" } },
+            };
+
+            IEnumerable<string> names = markets
+                .Where(w => w.Items.All(item => item.Length == 5))
+                .Select(m => m.Name);
+
+            IEnumerable<string> names1 = from market in markets
+                                         where market.Items.All(item => item.Length == 5)
+                                         select market.Name;
+
+            IEnumerable<string> names2 = markets
+              .Where(w => w.Items.Any(item => item.StartsWith("o")))
+              .Select(m => m.Name);
+
+            IEnumerable<string> names3 = markets
+              .Where(w => w.Items.Contains("kiwi"))
+              .Select(m => m.Name);
+
+            foreach (var item in names3)
+            {
+                Console.WriteLine(item);
+            }
+        }
+
+        public void SelectVsSelectMany()
+        {
+            List<string> phrases = new List<string>() { "an apple a day", "the quick brown fox" };
+
+            //var q1 = phrases
+            //.OrderBy(w => w.Split(' '));
+
+            var q2 = from phrase in phrases
+                     from word in phrase.Split(' ')
+                     select word;
+
+            foreach (var item in q2)
+            {
+                Console.WriteLine(item);
+            }
+        }
+
+        class Bouquet
+        {
+            public List<string> Flowers { get; set; }
+        }
+
+        public void SelectVsSelectMany2()
+        {
+            List<Bouquet> bouquets = new List<Bouquet>()
+            {
+                new Bouquet { Flowers = new List<string> { "sunflower", "daisy", "daffodil", "larkspur" }},
+                new Bouquet{ Flowers = new List<string> { "tulip", "rose", "orchid" }},
+                new Bouquet{ Flowers = new List<string> { "gladiolis", "lily", "snapdragon", "aster", "protea" }},
+                new Bouquet{ Flowers = new List<string> { "larkspur", "lilac", "iris", "dahlia" }}
+            };
+
+            Stopwatch sw1 = Stopwatch.StartNew();
+            IEnumerable<List<string>> q1 = bouquets
+                .Select(bq => bq.Flowers);
+
+            foreach (IEnumerable<String> item in q1)
+            {
+                foreach (var str in item)
+                    Console.WriteLine(str);
+            }
+            Console.WriteLine(sw1.Elapsed);
+
+            Console.WriteLine();
+
+            Stopwatch sw2 = Stopwatch.StartNew();//fast
+            IEnumerable<string> q2 = bouquets
+                .SelectMany(bq => bq.Flowers);
+
+            foreach (var item in q2)
+            {
+                Console.WriteLine(item);
+            }
+            Console.WriteLine(sw2.Elapsed);
+        }
+
+        class Product
+        {
+            public string Name { get; set; }
+            public int CategoryId { get; set; }
+        }
+
+        class Category
+        {
+            public int Id { get; set; }
+            public string CategoryName { get; set; }
+        }
+
+        public void JoinOperations()
+        {
+            List<Product> products = new List<Product>
+            {
+                new Product { Name = "Cola", CategoryId = 0 },
+                new Product { Name = "Tea", CategoryId = 0 },
+                new Product { Name = "Apple", CategoryId = 1 },
+                new Product { Name = "Kiwi", CategoryId = 1 },
+                new Product { Name = "Carrot", CategoryId = 2 },
+            };
+
+            List<Category> categories = new List<Category>
+            {
+                new Category { Id = 0, CategoryName = "Beverage" },
+                new Category { Id = 1, CategoryName = "Fruit" },
+                new Category { Id = 2, CategoryName = "Vegetable" }
+            };
+
+            var q1 = from product in products
+                     join category in categories
+                                   on product.CategoryId
+                                   equals category.Id
+                     select new { product.Name, category.CategoryName };
+
+            foreach (var item in q1)
+            {
+                //Console.WriteLine($"{item.Name} - {item.CategoryName}");
+            }
+
+            var q2 = from category in categories
+                     join product in products
+                                  on category.Id
+                                  equals product.CategoryId
+                                  into productGroup
+                     select productGroup;
+
+            foreach (IEnumerable<Product> productGroup in q2)
+            {
+                Console.WriteLine("Group");
+                foreach (Product product in productGroup)
+                {
+                    Console.WriteLine($"{product.Name,9}");
+                }
+            }
+        }
+
+        public void GroupingData()
+        {
+            List<int> numbers = new List<int>() { 35, 44, 200, 84, 3987, 4, 199, 329, 446, 208 };
+
+            IEnumerable<IGrouping<int, int>> query = from number in numbers
+                                                     group number by number % 2;
+
+            foreach (var group in query)
+            {
+                Console.WriteLine(group.Key == 0 ? "\nEven numbers:" : "\nOdd numbers");
+                foreach (var item in group)
+                {
+                    Console.WriteLine(item);
+                }
             }
         }
     }
@@ -559,7 +761,7 @@ namespace LinqToObject
     {
         static void Main(string[] args)
         {
-            new Q().ToUp();
+            new Q().GroupingData();
         }
     }
 }
