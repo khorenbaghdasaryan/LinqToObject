@@ -818,39 +818,65 @@ namespace LinqToObject
         {
             //string[] source = text.Split(new char[] { '.', '?', '!', ' ', ';', ':', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            string [] websites1 = { "NmaeA.com NmaeB.am NmaeG.ru NmaeD.em," +
-                    " NmaeA.bz NmaeE.it NmaeZ.az NmaeE.org NmaeT.tv" };
+            string [] websites1 = { "NmaeA.com NmaeB.am NmaeG.ru NmaeD.em" +
+                    " NmaeA.bz NmaeE.it NmaeZ.az NmaeE.org NmaeT.tv" +
+                    " NmaeA.com NmaeB.com NmaeG.com NmaeD.com" +
+                    " NmaeA.com NmaeE.it NmaeZ.az NmaeE.org NmaeT.tv"};
             //string[] source = websites1.Split(new char[] {' '});
 
             var q1 = from web in websites1
                      from word in web.Split(' ')
                      group word by word.Substring(word.LastIndexOf("."));
-                     //select word;
-                
-            foreach (var item in q1)
+
+            var q5 = websites1
+                .OrderBy(x => x.Split(' '));
+                //.GroupBy(x => x.Substring(x.LastIndexOf(".")));
+
+            foreach (var item in q5)
             {
                 Console.WriteLine(item);
             }
 
+            var q3 = from web in websites1
+                     from word in web.Split(' ')
+                     group word by word.Substring(word.LastIndexOf("."))
+                     into w
+                     where w.Count() > 1
+                     select w;
+
+            foreach (var items in q3)
+            {
+                //Console.WriteLine($"Web sites grouped by {items.Key}");
+                foreach (var item in items)
+                {
+                    //Console.WriteLine($"{item}");
+                }
+            }
+           
             string[] websites2 = { "NmaeA.com, NmaeB.com, NmaeG.com, NmaeD.com," +
                     " NmaeA.com, NmaeE.it, NmaeZ.az, NmaeE.org, NmaeT.tv"};
 
             var q2 = from web in websites2
                      from word in web.Split(", ")
                      group word by word.Substring(word.LastIndexOf("."));
-                     //select word;
+            //select word;
+
+            
 
             foreach (var item in q2)
             {
-                Console.WriteLine(item);
+                //Console.WriteLine(item.Key);
             }
-            string[] websites = { "NmaeA.com","NmaeB.am", "NmaeG.cm","NmaeD.com" +
-                    " NmaeA.com"," NmaeE.com"," NmaeZ.tv"," NmaeE.com","NmaeT.com" };
+            string[] websites = { "NmaeA.com", "NmaeB.am", "NmaeG.cm", "NmaeD.com", "NmaeA.com",
+                "NmaeE.com", "NmaeZ.tv", "NmaeE.com", "NmaeT.com" };
 
             var q = from website in websites
                      group website by website.Substring(website.LastIndexOf('.'));
 
-            foreach (var item in q)
+            var q4 = websites
+                .GroupBy(x => x.Substring(x.LastIndexOf(".")));
+
+            foreach (var item in q4)
             {
                 //Console.WriteLine(item.Key);
             }
