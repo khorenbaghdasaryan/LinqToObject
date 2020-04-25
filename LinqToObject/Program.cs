@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Xml.Linq;
 
 namespace LinqToObject
@@ -33,6 +34,10 @@ namespace LinqToObject
                              where word.ToLowerInvariant() == searchTerm.ToLowerInvariant()
                              select word;
 
+            foreach (var item in source)
+            {
+                Console.WriteLine(item);
+            }
             int wordCount = matchQuery.Count();
 
             Console.WriteLine($"{wordCount} occurrences(s) of the search term  {searchTerm}");
@@ -756,12 +761,107 @@ namespace LinqToObject
                 }
             }
         }
+
+        class Plant
+        {
+            public string Name { get; set; }
+        }
+
+        class CarnivorousPlant : Plant
+        {
+            public string TrapType { get; set; }
+        }
+
+        public void ConvertingDataTypes()
+        {
+            Plant[] plants = new Plant[] 
+            {
+                new CarnivorousPlant { Name = "Venus Fly Trap", TrapType = "Snap Trap" },
+                new CarnivorousPlant { Name = "Pitcher Plant", TrapType = "Pitfall Trap" },
+                new CarnivorousPlant { Name = "Sundew", TrapType = "Flypaper Trap" },
+                new CarnivorousPlant { Name = "Waterwheel Plant", TrapType = "Snap Trap" }
+            };
+
+            var q1 = from CarnivorousPlant cPlant in plants
+                     where cPlant.TrapType == "Snap Trap"
+                     select cPlant;
+
+            foreach (Plant plant in q1)
+            {
+                Console.WriteLine(plant.Name);
+            }
+        }
+
+        public void ReflectionHowTo()
+        {
+            Assembly assembly = Assembly.Load("System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken= b77a5c561934e089");
+            var pubTypesQuery = from type in assembly.GetTypes()
+                                where type.IsPublic
+                                from method in type.GetMethods()
+                                where method.ReturnType.IsArray == true
+                                || (method.ReturnType.GetInterface(
+                                    typeof(System.Collections.Generic.IEnumerable<>).FullName) != null
+                                    && method.ReturnType.FullName != "System.String")
+                                group method.ToString() by type.ToString();
+
+            foreach (var groupOfMethods in pubTypesQuery)
+            {
+                Console.WriteLine("Type: {0}", groupOfMethods.Key);
+                foreach (var method in groupOfMethods)
+                {
+                    Console.WriteLine("  {0}", method);
+                }
+            }
+        }
+
+        public void GroupDemo()
+        {
+            //string[] source = text.Split(new char[] { '.', '?', '!', ' ', ';', ':', ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+            string [] websites1 = { "NmaeA.com NmaeB.am NmaeG.ru NmaeD.em," +
+                    " NmaeA.bz NmaeE.it NmaeZ.az NmaeE.org NmaeT.tv" };
+            //string[] source = websites1.Split(new char[] {' '});
+
+            var q1 = from web in websites1
+                     from word in web.Split(' ')
+                     group word by word.Substring(word.LastIndexOf("."));
+                     //select word;
+                
+            foreach (var item in q1)
+            {
+                Console.WriteLine(item);
+            }
+
+            string[] websites2 = { "NmaeA.com, NmaeB.com, NmaeG.com, NmaeD.com," +
+                    " NmaeA.com, NmaeE.it, NmaeZ.az, NmaeE.org, NmaeT.tv"};
+
+            var q2 = from web in websites2
+                     from word in web.Split(", ")
+                     group word by word.Substring(word.LastIndexOf("."));
+                     //select word;
+
+            foreach (var item in q2)
+            {
+                Console.WriteLine(item);
+            }
+            string[] websites = { "NmaeA.com","NmaeB.am", "NmaeG.cm","NmaeD.com" +
+                    " NmaeA.com"," NmaeE.com"," NmaeZ.tv"," NmaeE.com","NmaeT.com" };
+
+            var q = from website in websites
+                     group website by website.Substring(website.LastIndexOf('.'));
+
+            foreach (var item in q)
+            {
+                //Console.WriteLine(item.Key);
+            }
+                     
+        }
     }
     class Program
     {
         static void Main(string[] args)
         {
-            new Q().GroupingData();
+            new Q().GroupDemo();
         }
     }
 }
