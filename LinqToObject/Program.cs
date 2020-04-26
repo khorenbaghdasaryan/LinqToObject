@@ -976,20 +976,55 @@ namespace LinqToObject
                 new Standard(){ StandardID = 3, StandardName="Standard 3"}
             };
 
-            var innerJoin = studentList.Join(
-                standardList,
-                student => student.StudentID,
-                standard => standard.StandardID,
-                (student, standard) => new
+
+            var innerJoinResult = studentList.Join(// outer sequence 
+                      standardList,  // inner sequence 
+                      student => student.StandardID,    // outerKeySelector
+                      standard => standard.StandardID,  // innerKeySelector
+                      (student, standard) => new  // result selector
+                      {
+                          StudentName = student.StudentName,
+                          StandardName = standard.StandardName
+                      });
+
+            foreach (var item in innerJoinResult)
+            {
+                Console.WriteLine($"{item.StudentName}-{item.StandardName}");
+            }
+
+            Console.WriteLine();
+
+            var groupJoin = standardList.GroupJoin(
+                studentList,
+                std => std.StandardID,
+                s => s.StandardID,
+                (std, studentGroup) => new
                 {
-                    StudentName = student.StudentName,
-                    StandardName = standard.StandardName
+                    Students = studentGroup,
+                    StandarFulldName = std.StandardName
                 });
 
-            foreach (var item in innerJoin)
+            foreach (var item in groupJoin)
             {
-                Console.WriteLine(item);
+                Console.WriteLine(item.StandarFulldName);
+
+                foreach (var stud in item.Students)
+                    Console.WriteLine(stud.StudentName);
             }
+
+            var selectResult = studentList.Select(s => new
+            {
+                Name = s.StudentName,
+                Age = s.StudentID
+            });
+
+            foreach (var item in selectResult)
+                Console.WriteLine($"Student Name: {item.Name}, ID: {item.Age}" );
+
+            bool areAllStudentsTeenAger = studentList.All(s => s.StudentID > 1 && s.StudentID < 4);
+
+            Console.WriteLine(areAllStudentsTeenAger);
+          
         }
     }
     class Program
