@@ -1022,9 +1022,15 @@ namespace LinqToObject
                 Console.WriteLine($"Student Name: {item.Name}, ID: {item.Age}" );
 
             bool areAllStudentsTeenAger = studentList.All(s => s.StudentID > 1 && s.StudentID < 4);
-
             Console.WriteLine(areAllStudentsTeenAger);
-          
+
+            bool isAnyStudentTeenAger = studentList.Any(s => s.StudentID > 1 && s.StudentID < 4);
+            Console.WriteLine(isAnyStudentTeenAger);
+
+            IList<int> intList = new List<int>() { 1, 2, 3, 4, 5 };
+            bool result = intList.Contains(10);
+            Console.WriteLine(result);
+
         }
     }
     class Program
