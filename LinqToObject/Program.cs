@@ -1,7 +1,9 @@
-﻿using System;
+﻿using LinqToObject;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -958,39 +960,58 @@ namespace LinqToObject
             public string StandardName { get; set; }
         }
 
+        public class StudentComparer : IEqualityComparer<Student>
+        {
+            public bool Equals(Student x, Student y)
+            {
+                if (x.StudentID == y.StudentID &&
+                         x.StudentName.ToLower() == y.StudentName.ToLower())
+                    return true;
+
+                return false;
+            }
+
+            public int GetHashCode([DisallowNull] Student obj)
+            {
+                return obj.GetHashCode();
+            }
+        }
+
+       
+
         public void JGJ()
         {
-            IList<Student> studentList = new List<Student>() 
+            IList<Student> studentList = new List<Student>()
             {
-                new Student() { StudentID = 1, StudentName = "John", StandardID =1 },
-                new Student() { StudentID = 2, StudentName = "Moin", StandardID =1 },
-                new Student() { StudentID = 3, StudentName = "Bill", StandardID =2 },
-                new Student() { StudentID = 4, StudentName = "Ram" , StandardID =2 },
-                new Student() { StudentID = 5, StudentName = "Ron"  }
+                    new Student() { StudentID = 1, StudentName = "John", StandardID =1 },
+                    new Student() { StudentID = 2, StudentName = "Moin", StandardID =1 },
+                    new Student() { StudentID = 3, StudentName = "Bill", StandardID =2 },
+                    new Student() { StudentID = 4, StudentName = "Ram", StandardID =2 },
+                    new Student() { StudentID = 5, StudentName = "Ron"  }
             };
 
-            IList<Standard> standardList = new List<Standard>() 
+            IList<Standard> standardList = new List<Standard>()
             {
-                new Standard(){ StandardID = 1, StandardName="Standard 1"},
-                new Standard(){ StandardID = 2, StandardName="Standard 2"},
-                new Standard(){ StandardID = 3, StandardName="Standard 3"}
+                    new Standard(){ StandardID = 1, StandardName="Standard 1"},
+                    new Standard(){ StandardID = 2, StandardName="Standard 2"},
+                    new Standard(){ StandardID = 3, StandardName="Standard 3"}
             };
 
 
             var innerJoinResult = studentList.Join(// outer sequence 
-                      standardList,  // inner sequence 
-                      student => student.StandardID,    // outerKeySelector
-                      standard => standard.StandardID,  // innerKeySelector
-                      (student, standard) => new  // result selector
+                  standardList,  // inner sequence 
+                  student => student.StandardID,    // outerKeySelector
+                  standard => standard.StandardID,  // innerKeySelector
+                  (student, standard) => new  // result selector
                       {
-                          StudentName = student.StudentName,
-                          StandardName = standard.StandardName
-                      });
+                      StudentName = student.StudentName,
+                      StandardName = standard.StandardName
+                  });
 
-            foreach (var item in innerJoinResult)
-            {
-                Console.WriteLine($"{item.StudentName}-{item.StandardName}");
-            }
+            //foreach (var item in innerJoinResult)
+            //{
+            //    Console.WriteLine($"{item.StudentName}-{item.StandardName}");
+            //}
 
             Console.WriteLine();
 
@@ -1004,13 +1025,12 @@ namespace LinqToObject
                     StandarFulldName = std.StandardName
                 });
 
-            foreach (var item in groupJoin)
-            {
-                Console.WriteLine(item.StandarFulldName);
-
-                foreach (var stud in item.Students)
-                    Console.WriteLine(stud.StudentName);
-            }
+            //foreach (var item in groupJoin)
+            //{
+            //    Console.WriteLine(item.StandarFulldName);
+            //    foreach (var stud in item.Students)
+            //        Console.WriteLine(stud.StudentName);
+            //}
 
             var selectResult = studentList.Select(s => new
             {
@@ -1018,20 +1038,26 @@ namespace LinqToObject
                 Age = s.StudentID
             });
 
-            foreach (var item in selectResult)
-                Console.WriteLine($"Student Name: {item.Name}, ID: {item.Age}" );
+            //foreach (var item in selectResult)
+            //    Console.WriteLine($"Student Name: {item.Name}, ID: {item.Age}" );
 
             bool areAllStudentsTeenAger = studentList.All(s => s.StudentID > 1 && s.StudentID < 4);
-            Console.WriteLine(areAllStudentsTeenAger);
+            //Console.WriteLine(areAllStudentsTeenAger);
 
             bool isAnyStudentTeenAger = studentList.Any(s => s.StudentID > 1 && s.StudentID < 4);
-            Console.WriteLine(isAnyStudentTeenAger);
+            //Console.WriteLine(isAnyStudentTeenAger);
 
             IList<int> intList = new List<int>() { 1, 2, 3, 4, 5 };
             bool result = intList.Contains(10);
-            Console.WriteLine(result);
+            //Console.WriteLine(result);
+
+            Student student = new Student() { StudentID = 4, StudentName = "Ram", StandardID = 2 };
+            bool res = studentList.Contains(student, new StudentComparer());
+            Console.WriteLine(res);
 
         }
+
+        
     }
     class Program
     {
