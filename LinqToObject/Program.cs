@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -398,15 +399,17 @@ namespace LinqToObject
 
         public void IntroToLINQ()
         {
-            int[] numbers = new int[10] { 5, 10, 8, 3, 6, 12, 6, 7, 8, 9 };
+            List<int> numbers1 = new List<int>() { 5, 4, 1, 3, 9, 8, 6, 7, 2, 0 };
+            List<int> numbers2 = new List<int>() { 15, 14, 11, 13, 19, 18, 16, 17, 12, 10 };
+
             //8ms -9
             var numQuery =
-                from num in numbers
+                from num in numbers1
                 where (num % 2) == 0
                 orderby num
                 select num;
             //fast 5ms -6
-            IEnumerable<int> numQuery2 = numbers
+            IEnumerable<int> numQuery2 = numbers1
                 .Where(num => num % 2 == 0)
                 .OrderBy(n => n);
 
@@ -878,16 +881,122 @@ namespace LinqToObject
 
             foreach (var item in q4)
             {
-                //Console.WriteLine(item.Key);
+                Console.WriteLine(item.Key);
             }
                      
+        }     
+    }
+    public class Lambda
+    {
+        class Student1
+        {
+            public int StudentID { get; set; }
+            public string StudentName { get; set; }
+            public int Age { get; set; }
+        }
+        public void SortingOperators()
+        {
+            IList<Student1> studentList = new List<Student1>()
+            {
+                new Student1() { StudentID = 1, StudentName = "John", Age = 18 } ,
+                new Student1() { StudentID = 2, StudentName = "Steve",  Age = 15 } ,
+                new Student1() { StudentID = 3, StudentName = "Bill",  Age = 25 } ,
+                new Student1() { StudentID = 4, StudentName = "Ram" , Age = 20 } ,
+                new Student1() { StudentID = 5, StudentName = "Ron" , Age = 19 },
+                new Student1() { StudentID = 6, StudentName = "Ram" , Age = 18 }
+            };
+
+            IList mixedList = new ArrayList();
+            mixedList.Add(0);
+            mixedList.Add("One");
+            mixedList.Add("Two");
+            mixedList.Add(3);
+            mixedList.Add(new Student1() { StudentID = 1, StudentName = "Bill" });
+
+            var thenBy = studentList.OrderBy(s => s.StudentName).ThenBy(s => s.Age);
+            var q1 = studentList.OrderBy(s => s.StudentName);
+            var q2 = studentList.OrderByDescending(s => s.StudentName);
+            var q3 = studentList.OrderBy(s => s.StudentName).ThenBy(s => s.Age);
+            var q4 = studentList.OrderBy(s => s.StudentName).ThenByDescending(s => s.Age);
+            var q5 = studentList.GroupBy(s => s.Age);
+            var q6 = studentList.ToLookup(s => s.Age);
+            var q7 = studentList.OrderBy(s => s.StudentName).Reverse();
+
+
+
+            foreach (var item in q7)
+            {
+                Console.WriteLine($"StudentName: {item.StudentName}, Age: {item.Age}");
+            }
+
+            foreach (var item in q6)
+            {
+                Console.WriteLine("Age Group: {0}", item.Key); //Each group has a key 
+
+                foreach (Student1 s in item) // Each group has inner collection
+                    Console.WriteLine("Student Name: {0}", s.StudentName);
+            }
+
+            var query = mixedList.OfType<String>();
+
+            foreach (var item in query)
+            {
+                Console.WriteLine(item);
+            }
+        }
+
+        public class Student
+        {
+            public int StudentID { get; set; }
+            public string StudentName { get; set; }
+            public int StandardID { get; set; }
+        }
+
+        public class Standard
+        {
+            public int StandardID { get; set; }
+            public string StandardName { get; set; }
+        }
+
+        public void JGJ()
+        {
+            IList<Student> studentList = new List<Student>() 
+            {
+                new Student() { StudentID = 1, StudentName = "John", StandardID =1 },
+                new Student() { StudentID = 2, StudentName = "Moin", StandardID =1 },
+                new Student() { StudentID = 3, StudentName = "Bill", StandardID =2 },
+                new Student() { StudentID = 4, StudentName = "Ram" , StandardID =2 },
+                new Student() { StudentID = 5, StudentName = "Ron"  }
+            };
+
+            IList<Standard> standardList = new List<Standard>() 
+            {
+                new Standard(){ StandardID = 1, StandardName="Standard 1"},
+                new Standard(){ StandardID = 2, StandardName="Standard 2"},
+                new Standard(){ StandardID = 3, StandardName="Standard 3"}
+            };
+
+            var innerJoin = studentList.Join(
+                standardList,
+                student => student.StudentID,
+                standard => standard.StandardID,
+                (student, standard) => new
+                {
+                    StudentName = student.StudentName,
+                    StandardName = standard.StandardName
+                });
+
+            foreach (var item in innerJoin)
+            {
+                Console.WriteLine(item);
+            }
         }
     }
     class Program
     {
         static void Main(string[] args)
         {
-            new Q().GroupDemo();
+            new Lambda().JGJ();
         }
     }
 }
