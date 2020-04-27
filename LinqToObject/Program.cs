@@ -1139,6 +1139,15 @@ namespace LinqToObject
             var lastOrDefault = studentList.LastOrDefault(s => s.StudentName.Contains("R"));
             Console.WriteLine($"Last name: {lastOrDefault.StudentName}");
 
+            //var single = studentList.Single();
+            //Console.WriteLine(single.StudentName);
+
+            var single1 = studentList.Single(s => s.Age == 18);
+            Console.WriteLine($"Single : {single1.StudentName}");
+
+            var singleOrDefault = studentList.SingleOrDefault(s => s.StudentID == 2);
+            Console.WriteLine($"Single Or Default : {singleOrDefault.StudentName}");
+
             Student std = new Student() { StudentID = 1, StudentName = "Bill" };
             IList<Student> studentList1 = new List<Student>() { std };
             IList<Student> studentList2 = new List<Student>() { std };
@@ -1161,13 +1170,87 @@ namespace LinqToObject
 
             foreach (string str in collection3)
                 Console.WriteLine(str);
+
+
+            IList<Student> emptyStudentList = new List<Student>();
+
+            var newStudentList1 = emptyStudentList.DefaultIfEmpty();
+            Console.WriteLine($"Count: {emptyStudentList.Count()} ");
+            Console.WriteLine($"Student ID: {newStudentList1.ElementAt(0)} ");
+
+            var newStudentList2 = studentList.DefaultIfEmpty(new Student()
+            {
+                StudentID = 0,
+                StudentName = ""
+            });
+            Console.WriteLine($"Count: {newStudentList2.Count()}");
+            Console.WriteLine($"Student ID: {newStudentList2.ElementAt(0).StudentID}");
+
+            Console.WriteLine();
+
+            var emptyCollection1 = Enumerable.Empty<string>();
+            var emptyCollection2 = Enumerable.Empty<Student>();
+
+            Console.WriteLine($"Count : {emptyCollection1.Count()}");
+            Console.WriteLine($"Type : {emptyCollection1.GetType().Name}");
+
+            Console.WriteLine($"Count : {emptyCollection2.Count()}");
+            Console.WriteLine($"Type : {emptyCollection2.GetType().Name}");
+
+            var intCollectionRange = Enumerable.Range(10, 11);
+            Console.WriteLine($"Total Count : {intCollectionRange.Count()}");
+
+            for (int i = 0; i < intCollectionRange.Count(); i++)
+                 Console.WriteLine($"Value at index {i} : {intCollectionRange.ElementAt(i)}");
+
+            Console.WriteLine();
+
+            var intCollectionRepeat = Enumerable.Repeat<int>(10, 10);
+            Console.WriteLine("Total Count: {0} ", intCollectionRepeat.Count());
+
+            for (int i = 0; i < intCollectionRepeat.Count(); i++)
+                Console.WriteLine("Value at index {0} : {1}", i, intCollectionRepeat.ElementAt(i));
+
+
+            //The Except() method requires two collections. It returns
+            //a new collection with elements from the first collection
+            //which do not exist in the second collection(parameter collection). 
+            IList<string> strList1 = new List<string>() { "One", "Two", "Three", "Four", "Five" };
+            IList<string> strList2 = new List<string>() { "Four", "Five", "Six", "Seven", "Eight" };
+
+            var resultExcept = strList1.Except(strList2);
+
+            foreach (string str in resultExcept)
+                Console.WriteLine(str);
+        }
+
+        public void Met2()
+        {
+            IList<Student> studentList1 = new List<Student>() 
+            {
+                new Student() { StudentID = 1, StudentName = "John", Age = 18 } ,
+                new Student() { StudentID = 2, StudentName = "Steve",  Age = 15 } ,
+                new Student() { StudentID = 3, StudentName = "Bill",  Age = 25 } ,
+                new Student() { StudentID = 5, StudentName = "Ron" , Age = 19 }
+            };
+
+            IList<Student> studentList2 = new List<Student>() 
+            {
+                new Student() { StudentID = 3, StudentName = "Bill",  Age = 25 } ,
+                new Student() { StudentID = 5, StudentName = "Ron" , Age = 19 }
+            };
+
+            var resultedCol = studentList1.Except(studentList2, new StudentComparer());
+
+            foreach(Student student in resultedCol)
+                Console.WriteLine(student.StudentName);
         }
     }
     class Program
     {
         static void Main(string[] args)
         {
-            new Lambda().JGJ();
+            new Lambda().Met2();
         }
     }
 }
