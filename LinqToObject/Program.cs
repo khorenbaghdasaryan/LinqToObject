@@ -947,12 +947,28 @@ namespace LinqToObject
             }
         }
 
-        public class Student
+        public class Student : IComparable<Student>
         {
             public int StudentID { get; set; }
             public string StudentName { get; set; }
             public int Age { get; set; }
             public int StandardID { get; set; }
+
+            public int CompareTo(Student other)
+            {
+                //if (this.StudentName.Length >= other.StudentName.Length)
+                //    return 1;
+                //return 0;
+
+                //if (this.StudentID >= other.StudentID)
+                //    return 1;
+                //return 0;
+
+                if (this.StandardID >= other.StandardID)
+                    return 1;
+                return 0;
+
+            }
         }
 
         public class Standard
@@ -1077,15 +1093,42 @@ namespace LinqToObject
 
             var totalStudents = studentList.Count();
             Console.WriteLine($"Total Students: {totalStudents}");
+            var longCount = studentList.LongCount();
+            Console.WriteLine(longCount);
+
 
             var adultStudents = studentList.Count(s => s.Age >= 18);
             Console.WriteLine($"Number of Adult Students: {adultStudents}");
 
             var studentWithLongName = studentList.Max();
-            //Console.WriteLine($"Student ID: {studentWithLongName.StudentID}, Student Name: {studentWithLongName.StudentName}");
+            Console.WriteLine($"Student ID: {studentWithLongName.StudentID}, Student Name: {studentWithLongName.StudentName}");
+            
+            var min = studentList.Min(s => s.Age);
+            Console.WriteLine($"Min : {min}");
+
+            var sum = studentList.Sum(s => s.StudentName.Length);
+            Console.WriteLine($"Sum age {sum}");
 
             var oldest = studentList.Max(s => s.Age);
             Console.WriteLine($"Oldest Student Age: {oldest}");
+
+            var elementAt = studentList.ElementAt(3);
+            Console.WriteLine($"Element at 0. Name : {elementAt.StudentName}, Age : {elementAt.Age}");
+
+            var elementAtOrDefault = studentList.ElementAtOrDefault(4);
+            Console.WriteLine($"Element At Or Default {elementAtOrDefault.StudentName}");
+
+            var first = studentList.First();
+            Console.WriteLine($"First name: {first.StudentName}");
+
+            var first2 = studentList.First(s => s.StudentName == "Ron");
+            Console.WriteLine($"First name: {first2.StudentName}");
+
+            var firstOrDefault = studentList.FirstOrDefault(s => s.Age >= 18);
+            Console.WriteLine($"First name: {firstOrDefault.StudentName}");
+
+            var firstOrDefault2 = studentList.FirstOrDefault(s => s.StudentName.Contains("R"));
+            Console.WriteLine($"First name: {firstOrDefault2.StudentName}");
         }
     }
     class Program
