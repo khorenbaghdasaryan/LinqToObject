@@ -951,6 +951,7 @@ namespace LinqToObject
         {
             public int StudentID { get; set; }
             public string StudentName { get; set; }
+            public int Age { get; set; }
             public int StandardID { get; set; }
         }
 
@@ -983,11 +984,11 @@ namespace LinqToObject
         {
             IList<Student> studentList = new List<Student>()
             {
-                    new Student() { StudentID = 1, StudentName = "John", StandardID =1 },
-                    new Student() { StudentID = 2, StudentName = "Moin", StandardID =1 },
-                    new Student() { StudentID = 3, StudentName = "Bill", StandardID =2 },
-                    new Student() { StudentID = 4, StudentName = "Ram", StandardID =2 },
-                    new Student() { StudentID = 5, StudentName = "Ron"  }
+                    new Student() { StudentID = 1, StudentName = "John", Age = 13, StandardID =1 },
+                    new Student() { StudentID = 2, StudentName = "Moin", Age = 21, StandardID =1 },
+                    new Student() { StudentID = 3, StudentName = "Bill", Age = 18, StandardID =2 },
+                    new Student() { StudentID = 4, StudentName = "Ram", Age = 20, StandardID =2 },
+                    new Student() { StudentID = 5, StudentName = "Ron", Age = 15 }
             };
 
             IList<Standard> standardList = new List<Standard>()
@@ -1053,11 +1054,39 @@ namespace LinqToObject
 
             Student student = new Student() { StudentID = 4, StudentName = "Ram", StandardID = 2 };
             bool res = studentList.Contains(student, new StudentComparer());
-            Console.WriteLine(res);
+            //Console.WriteLine(res);
 
+            string commaSeparatedStudentNames = studentList.Aggregate<Student, string>(
+                "Student name: ",
+                (s1, s2) => s1 += s2.StudentName + ", ");
+            Console.WriteLine(commaSeparatedStudentNames);
+
+            int sumOfStudentsAge = studentList.Aggregate<Student, int>(
+                0,
+                (i1, i2) => i1 += i2.Age);
+            Console.WriteLine(sumOfStudentsAge);
+
+            string commaSeparatedStudentNames2 = studentList.Aggregate<Student, string, string>(
+                "Student name: ",
+                (str, s) => str += s.StudentName + ", ",
+                str => str.Substring(0, str.Length - 2));
+            Console.WriteLine(commaSeparatedStudentNames2);
+
+            var avgAge = studentList.Average(s => s.Age);
+            Console.WriteLine($"Average Age of Student: {avgAge}");
+
+            var totalStudents = studentList.Count();
+            Console.WriteLine($"Total Students: {totalStudents}");
+
+            var adultStudents = studentList.Count(s => s.Age >= 18);
+            Console.WriteLine($"Number of Adult Students: {adultStudents}");
+
+            var studentWithLongName = studentList.Max();
+            //Console.WriteLine($"Student ID: {studentWithLongName.StudentID}, Student Name: {studentWithLongName.StudentName}");
+
+            var oldest = studentList.Max(s => s.Age);
+            Console.WriteLine($"Oldest Student Age: {oldest}");
         }
-
-        
     }
     class Program
     {
