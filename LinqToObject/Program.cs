@@ -1129,6 +1129,38 @@ namespace LinqToObject
 
             var firstOrDefault2 = studentList.FirstOrDefault(s => s.StudentName.Contains("R"));
             Console.WriteLine($"First name: {firstOrDefault2.StudentName}");
+
+            var last = studentList.Last();
+            Console.WriteLine($"Last name {last.StudentName}");
+
+            var last2 = studentList.Last(s => s.Age >= 18);
+            Console.WriteLine($"Last name {last2.StudentName}");
+
+            var lastOrDefault = studentList.LastOrDefault(s => s.StudentName.Contains("R"));
+            Console.WriteLine($"Last name: {lastOrDefault.StudentName}");
+
+            Student std = new Student() { StudentID = 1, StudentName = "Bill" };
+            IList<Student> studentList1 = new List<Student>() { std };
+            IList<Student> studentList2 = new List<Student>() { std };
+            bool isEqual = studentList1.SequenceEqual(studentList2); // returns true
+            Console.WriteLine($"Sequence Equal : {isEqual}");
+
+            Student std1 = new Student() { StudentID = 1, StudentName = "Bill" };
+            Student std2 = new Student() { StudentID = 1, StudentName = "Bill" };
+            IList<Student> studentList3 = new List<Student>() { std1 };
+            IList<Student> studentList4 = new List<Student>() { std2 };
+            isEqual = studentList3.SequenceEqual(studentList4);
+            Console.WriteLine($"Sequence Equal : {isEqual}");
+            isEqual = studentList3.SequenceEqual(studentList4, new StudentComparer());
+            Console.WriteLine($"Sequence Equal : {isEqual}");
+
+            IList<string> collection1 = new List<string>() { "One", "Two", "Three" };
+            IList<string> collection2 = new List<string>() { "Five", "Six" };
+
+            var collection3 = collection1.Concat(collection2);
+
+            foreach (string str in collection3)
+                Console.WriteLine(str);
         }
     }
     class Program
