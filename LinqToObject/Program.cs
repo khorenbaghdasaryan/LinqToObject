@@ -1267,20 +1267,39 @@ namespace LinqToObject
             };
 
             var resultedCol = studentList1.Except(studentList2, new StudentComparer2());
-            foreach (Student2 std in resultedCol)
-                Console.WriteLine(std.StudentName);
+            //foreach (Student2 std in resultedCol)
+                //Console.WriteLine(std.StudentName);
 
-            Console.WriteLine();
+            //Console.WriteLine();
 
             var resultIntersect = studentList1.Intersect(studentList2, new StudentComparer2());
-            foreach (var item in resultIntersect)
+            //foreach (var item in resultIntersect)
+                //Console.WriteLine(item.StudentName);
+
+            //Console.WriteLine();
+
+            var resultUnion = studentList1.Union(studentList2, new StudentComparer2());
+            //foreach (var item in resultUnion)
+                //Console.WriteLine(item.StudentName);
+
+            //Console.WriteLine();
+
+            var resultSkip = resultUnion.Skip(2);
+            foreach (var item in resultSkip)
+                Console.WriteLine(item.StudentName);
+            
+            Console.WriteLine();
+
+            var resultSkipLast = studentList1.SkipLast(2);
+            foreach (var item in resultSkipLast)
                 Console.WriteLine(item.StudentName);
 
             Console.WriteLine();
 
-            var resultUnion = studentList1.Union(studentList2, new StudentComparer2());
-            foreach (var item in resultUnion)
+            var result = studentList1.SkipWhile(s => s.StudentName.Length == 4);
+            foreach (var item in result)
                 Console.WriteLine(item.StudentName);
+
         }
     }
 
