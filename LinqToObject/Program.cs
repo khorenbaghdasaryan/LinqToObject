@@ -779,7 +779,7 @@ namespace LinqToObject
 
         public void ConvertingDataTypes()
         {
-            Plant[] plants = new Plant[] 
+            Plant[] plants = new Plant[]
             {
                 new CarnivorousPlant { Name = "Venus Fly Trap", TrapType = "Snap Trap" },
                 new CarnivorousPlant { Name = "Pitcher Plant", TrapType = "Pitfall Trap" },
@@ -823,7 +823,7 @@ namespace LinqToObject
         {
             //string[] source = text.Split(new char[] { '.', '?', '!', ' ', ';', ':', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            string [] websites1 = { "NmaeA.com NmaeB.am NmaeG.ru NmaeD.em" +
+            string[] websites1 = { "NmaeA.com NmaeB.am NmaeG.ru NmaeD.em" +
                     " NmaeA.bz NmaeE.it NmaeZ.az NmaeE.org NmaeT.tv" +
                     " NmaeA.com NmaeB.com NmaeG.com NmaeD.com" +
                     " NmaeA.com NmaeE.it NmaeZ.az NmaeE.org NmaeT.tv"};
@@ -835,7 +835,7 @@ namespace LinqToObject
 
             var q5 = websites1
                 .OrderBy(x => x.Split(' '));
-                //.GroupBy(x => x.Substring(x.LastIndexOf(".")));
+            //.GroupBy(x => x.Substring(x.LastIndexOf(".")));
 
             foreach (var item in q5)
             {
@@ -857,7 +857,7 @@ namespace LinqToObject
                     //Console.WriteLine($"{item}");
                 }
             }
-           
+
             string[] websites2 = { "NmaeA.com, NmaeB.com, NmaeG.com, NmaeD.com," +
                     " NmaeA.com, NmaeE.it, NmaeZ.az, NmaeE.org, NmaeT.tv"};
 
@@ -866,7 +866,7 @@ namespace LinqToObject
                      group word by word.Substring(word.LastIndexOf("."));
             //select word;
 
-            
+
 
             foreach (var item in q2)
             {
@@ -876,7 +876,7 @@ namespace LinqToObject
                 "NmaeE.com", "NmaeZ.tv", "NmaeE.com", "NmaeT.com" };
 
             var q = from website in websites
-                     group website by website.Substring(website.LastIndexOf('.'));
+                    group website by website.Substring(website.LastIndexOf('.'));
 
             var q4 = websites
                 .GroupBy(x => x.Substring(x.LastIndexOf(".")));
@@ -885,8 +885,8 @@ namespace LinqToObject
             {
                 Console.WriteLine(item.Key);
             }
-                     
-        }     
+
+        }
     }
     public class Lambda
     {
@@ -970,13 +970,6 @@ namespace LinqToObject
 
             }
         }
-
-        public class Standard
-        {
-            public int StandardID { get; set; }
-            public string StandardName { get; set; }
-        }
-
         public class StudentComparer : IEqualityComparer<Student>
         {
             public bool Equals(Student x, Student y)
@@ -984,7 +977,6 @@ namespace LinqToObject
                 if (x.StudentID == y.StudentID &&
                          x.StudentName.ToLower() == y.StudentName.ToLower())
                     return true;
-
                 return false;
             }
 
@@ -994,7 +986,14 @@ namespace LinqToObject
             }
         }
 
-       
+        public class Standard
+        {
+            public int StandardID { get; set; }
+            public string StandardName { get; set; }
+        }
+
+
+
 
         public void JGJ()
         {
@@ -1020,7 +1019,7 @@ namespace LinqToObject
                   student => student.StandardID,    // outerKeySelector
                   standard => standard.StandardID,  // innerKeySelector
                   (student, standard) => new  // result selector
-                      {
+                  {
                       StudentName = student.StudentName,
                       StandardName = standard.StandardName
                   });
@@ -1102,7 +1101,7 @@ namespace LinqToObject
 
             var studentWithLongName = studentList.Max();
             Console.WriteLine($"Student ID: {studentWithLongName.StudentID}, Student Name: {studentWithLongName.StudentName}");
-            
+
             var min = studentList.Min(s => s.Age);
             Console.WriteLine($"Min : {min}");
 
@@ -1201,7 +1200,7 @@ namespace LinqToObject
             Console.WriteLine($"Total Count : {intCollectionRange.Count()}");
 
             for (int i = 0; i < intCollectionRange.Count(); i++)
-                 Console.WriteLine($"Value at index {i} : {intCollectionRange.ElementAt(i)}");
+                Console.WriteLine($"Value at index {i} : {intCollectionRange.ElementAt(i)}");
 
             Console.WriteLine();
 
@@ -1223,34 +1222,74 @@ namespace LinqToObject
             foreach (string str in resultExcept)
                 Console.WriteLine(str);
         }
+    }
 
-        public void Met2()
+    class Lambda2
+    {
+        public class Student2
         {
-            IList<Student> studentList1 = new List<Student>() 
+            public int StudentID { get; set; }
+            public string StudentName { get; set; }
+            public int Age { get; set; }
+        }
+
+        class StudentComparer2 : IEqualityComparer<Student2>
+        {
+            public bool Equals(Student2 x, Student2 y)
             {
-                new Student() { StudentID = 1, StudentName = "John", Age = 18 } ,
-                new Student() { StudentID = 2, StudentName = "Steve",  Age = 15 } ,
-                new Student() { StudentID = 3, StudentName = "Bill",  Age = 25 } ,
-                new Student() { StudentID = 5, StudentName = "Ron" , Age = 19 }
+                if (x.StudentID == y.StudentID && x.StudentName.ToLower() == y.StudentName.ToLower())
+
+                    return true;
+
+                return false;
+            }
+
+            public int GetHashCode(Student2 obj)
+            {
+                return obj.StudentID.GetHashCode();
+            }
+        }
+        public void Met()
+        {
+            IList<Student2> studentList1 = new List<Student2>()
+            {
+                new Student2() { StudentID = 1, StudentName = "John", Age = 18 } ,
+                new Student2() { StudentID = 2, StudentName = "Steve",  Age = 15 } ,
+                new Student2() { StudentID = 3, StudentName = "Bill",  Age = 25 } ,
+                new Student2() { StudentID = 5, StudentName = "Ron" , Age = 19 }
             };
 
-            IList<Student> studentList2 = new List<Student>() 
+            IList<Student2> studentList2 = new List<Student2>()
             {
-                new Student() { StudentID = 3, StudentName = "Bill",  Age = 25 } ,
-                new Student() { StudentID = 5, StudentName = "Ron" , Age = 19 }
+                new Student2() { StudentID = 3, StudentName = "Bill",  Age = 25 } ,
+                new Student2() { StudentID = 5, StudentName = "Ron" , Age = 19 } ,
+                new Student2() { StudentID = 6, StudentName = "Ram" , Age = 29 }
             };
 
-            var resultedCol = studentList1.Except(studentList2, new StudentComparer());
+            var resultedCol = studentList1.Except(studentList2, new StudentComparer2());
+            foreach (Student2 std in resultedCol)
+                Console.WriteLine(std.StudentName);
 
-            foreach(Student student in resultedCol)
-                Console.WriteLine(student.StudentName);
+            Console.WriteLine();
+
+            var resultIntersect = studentList1.Intersect(studentList2, new StudentComparer2());
+            foreach (var item in resultIntersect)
+                Console.WriteLine(item.StudentName);
+
+            Console.WriteLine();
+
+            var resultUnion = studentList1.Union(studentList2, new StudentComparer2());
+            foreach (var item in resultUnion)
+                Console.WriteLine(item.StudentName);
         }
     }
+
     class Program
     {
         static void Main(string[] args)
         {
-            new Lambda().Met2();
+            new Lambda2().Met();
         }
     }
 }
+
