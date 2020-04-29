@@ -1,5 +1,4 @@
-﻿using LinqToObject;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -1253,8 +1252,8 @@ namespace LinqToObject
         {
             IList<Student2> studentList1 = new List<Student2>()
             {
-                new Student2() { StudentID = 1, StudentName = "John", Age = 18 } ,
-                new Student2() { StudentID = 2, StudentName = "Steve",  Age = 15 } ,
+                new Student2() { StudentID = 1, StudentName = "Steve", Age = 18 } ,
+                new Student2() { StudentID = 2, StudentName = "John",  Age = 15 } ,
                 new Student2() { StudentID = 3, StudentName = "Bill",  Age = 25 } ,
                 new Student2() { StudentID = 5, StudentName = "Ron" , Age = 19 }
             };
@@ -1285,21 +1284,77 @@ namespace LinqToObject
             //Console.WriteLine();
 
             var resultSkip = resultUnion.Skip(2);
-            foreach (var item in resultSkip)
-                Console.WriteLine(item.StudentName);
+            //foreach (var item in resultSkip)
+            //    Console.WriteLine(item.StudentName);
             
-            Console.WriteLine();
+            //Console.WriteLine();
 
             var resultSkipLast = studentList1.SkipLast(2);
-            foreach (var item in resultSkipLast)
+            //foreach (var item in resultSkipLast)
+            //    Console.WriteLine(item.StudentName);
+
+            //Console.WriteLine();
+            
+            //բաց է թողնում պայմանին բավարարող բոլոր դեպքերը, 
+            //բավարարելու դեպքում անտեսում պայմանը տպելով բոլոր մնացած դեպքերը
+            var resultSkipWhile = studentList1.SkipWhile(s => s.StudentName.Length == 4);
+            //foreach (var item in resultSkipWhile)
+            //    Console.WriteLine(item.StudentName);
+
+            //Console.WriteLine();
+
+            var resultTake = studentList1.Take(4);
+            foreach (var item in resultTake)
                 Console.WriteLine(item.StudentName);
 
             Console.WriteLine();
 
-            var result = studentList1.SkipWhile(s => s.StudentName.Length == 4);
-            foreach (var item in result)
+            //վերցնում է պայմանին բավարարող բոլոր դեպքերը, 
+            //չբավարարելու դեպքում անտեսում բոլոր մնացած դեպքերը
+            var resultTakeWhile = studentList1.TakeWhile(s => s.StudentName.Length > 3);
+            foreach (var item in resultTakeWhile)
                 Console.WriteLine(item.StudentName);
+        }
 
+        public void Met2()
+        {
+            Student2[] studentArray = 
+            {
+                new Student2() { StudentID = 1, StudentName = "John", Age = 18 } ,
+                new Student2() { StudentID = 2, StudentName = "Steve",  Age = 21 } ,
+                new Student2() { StudentID = 3, StudentName = "Bill",  Age = 25 } ,
+                new Student2() { StudentID = 4, StudentName = "Ram" , Age = 20 } ,
+                new Student2() { StudentID = 5, StudentName = "Ron" , Age = 31 } ,
+            };
+
+            ReportTypeProperties(studentArray);
+
+            //ReportTypeProperties(studentArray.AsEnumerable());
+            //ReportTypeProperties(studentArray.AsQueryable());
+
+            //ReportTypeProperties(studentArray.Cast<Student2>());
+            //ReportTypeProperties(studentArray.OfType<string>());
+
+            ReportTypeProperties(studentArray.ToArray<Student2>());
+            ReportTypeProperties(studentArray.ToList<Student2>());
+            ReportTypeProperties(studentArray.ToLookup(s => s.Age));
+
+            //ReportTypeProperties(studentArray.AsParallel());
+            //ReportTypeProperties(studentArray.AsMemory());
+
+            IDictionary<int, Student2> dictionary =
+                studentArray.ToDictionary<Student2, int>(s => s.StudentID);
+
+            foreach (var item in dictionary.Keys)
+                Console.WriteLine($"Key: {item}, Value: {(dictionary[item] as Student2).StudentName}");
+            
+        }
+
+        private void ReportTypeProperties<T>(T obj)
+        {
+            Console.WriteLine($"Compile-time type: {typeof(T).Name}");
+            Console.WriteLine($"Actual type: {obj.GetType().Name}");
+            Console.WriteLine();
         }
     }
 
@@ -1307,7 +1362,7 @@ namespace LinqToObject
     {
         static void Main(string[] args)
         {
-            new Lambda2().Met();
+            new Lambda2().Met2();
         }
     }
 }
