@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using static LinqToObject.Lambda2;
 
@@ -1436,13 +1438,60 @@ namespace LinqToObject
             data[9906000] = -6;
             data[99080000] = -7;
 
-
+            Stopwatch sw1 = Stopwatch.StartNew();
             var qp = data.Where(s => s < 0)
                          .AsParallel();
 
             foreach (var item in qp)
                 Console.WriteLine(item + " ");
+            Console.WriteLine(sw1.Elapsed);
 
+            Console.WriteLine();///////////////////////
+
+            Stopwatch sw2 = Stopwatch.StartNew();
+            var qp2 = data.Where(s => s < 0)
+                          .AsParallel()
+                          .AsOrdered();
+
+            foreach (var item in qp2)
+                Console.WriteLine(item + " ");
+            Console.WriteLine(sw2.Elapsed);
+
+            Console.WriteLine();///////////////////////
+
+            Stopwatch sw3 = Stopwatch.StartNew();
+            var qp3 = data.Where(s => s < 0)
+                          .AsParallel()
+                          .WithDegreeOfParallelism(6);
+            foreach (var item in qp3)
+                Console.WriteLine(item + " ");
+            Console.WriteLine(sw3.Elapsed);
+
+            Console.WriteLine();//////////////////////
+
+            CancellationTokenSource source = new CancellationTokenSource();
+            var qp4 = data.Where(s => s < 0)
+                          .AsParallel()
+                          .WithCancellation(source.Token);
+
+            Task task = Task.Factory.StartNew(() =>
+            {
+                source.Cancel();
+            });
+
+            try
+            {
+                foreach (var item in qp4)
+                    Console.WriteLine(item + " ");             
+            }
+            catch (OperationCanceledException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            task.Wait();
+            task.Dispose();
+            source.Dispose();
+                
             
         }
     }
