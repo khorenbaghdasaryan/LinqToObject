@@ -5,8 +5,10 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Xml.Linq;
+using static LinqToObject.Lambda2;
 
 namespace LinqToObject
 {
@@ -1314,6 +1316,8 @@ namespace LinqToObject
             var resultTakeWhile = studentList1.TakeWhile(s => s.StudentName.Length > 3);
             foreach (var item in resultTakeWhile)
                 Console.WriteLine(item.StudentName);
+
+           
         }
 
         public void Met2()
@@ -1357,12 +1361,99 @@ namespace LinqToObject
             Console.WriteLine();
         }
     }
+    class ExpressioninLINQ
+    {
+        public class Student
+        {
+            public int StudentID { get; set; }
+            public string StudentName { get; set; }
+            public int Age { get; set; }
+        }
+        public void Met()
+        {
+            Expression<Func<Student, bool>> TeenAgerExpr = s => s.Age > 12 && s.Age < 20;
 
-    class Program
+            Func<Student, bool> isTeenAger = TeenAgerExpr.Compile();
+
+            bool result = isTeenAger(new Student() { StudentID = 1, StudentName = "Steve", Age = 20 });
+            Console.WriteLine(result);
+        }
+
+        public void ExpressionTree()
+        {
+            //ParameterExpression parameterExpression = Expression.Parameter(typeof(Student), "s");
+
+            //MemberExpression memberExpression = Expression.Property(parameterExpression, "Age");
+
+            //ConstantExpression constant = Expression.Constant(18, typeof(int));
+
+            //BinaryExpression body = Expression.GreaterThanOrEqual(memberExpression, constant);
+
+            //var ExpressionTree = Expression.Lambda<Func<Student, bool>>(body, new[] { parameterExpression });
+
+            //Console.WriteLine($"Expression Tree: {ExpressionTree}");
+
+            //Console.WriteLine($"Expression Tree Body: {ExpressionTree.Body}");
+
+            //Console.WriteLine($"Number of Parameters in Expression Tree: {ExpressionTree.Parameters.Count}");
+
+            //Console.WriteLine($"Parameters in Expression Tree: {ExpressionTree.Parameters[0]}");
+
+            Console.WriteLine();
+
+            Expression<Func<Student, bool>> isTeenAgerExpr = s => s.Age > 12 && s.Age < 20;
+            
+            Console.WriteLine($"Expression: {isTeenAgerExpr}");
+            Console.WriteLine($"Expression Type: {isTeenAgerExpr.NodeType}");
+
+            var parameters = isTeenAgerExpr.Parameters;
+
+            foreach (var item in parameters)
+            {
+                Console.WriteLine($"Parameter Name: {item.Name}");
+                Console.WriteLine($"Parameter Type: {item.Type.Name}");
+            }
+
+            var bodyExpr = isTeenAgerExpr.Body as BinaryExpression;
+
+            Console.WriteLine($"Left side body expression: {bodyExpr.Left}");
+            Console.WriteLine($"Binary Expression Type: {bodyExpr.NodeType}");
+            Console.WriteLine($"Right side body expression: {bodyExpr.Right}");
+            Console.WriteLine($"Return Type: {isTeenAgerExpr.ReturnType}");
+
+        }
+
+        public void AsParall()
+        {
+            int[] data = new int[100000000];
+            for (int i = 0; i < data.Length; i++)
+                data[i] = i;
+            data[1000] = -1;
+            data[14000] = -2;
+            data[15000] = -3;
+            data[676000] = -4;
+            data[8024540] = -5;
+            data[9906000] = -6;
+            data[99080000] = -7;
+
+
+            var qp = data.Where(s => s < 0)
+                         .AsParallel();
+
+            foreach (var item in qp)
+                Console.WriteLine(item + " ");
+
+            
+        }
+    }
+
+    
+
+        class Program
     {
         static void Main(string[] args)
         {
-            new Lambda2().Met2();
+            new ExpressioninLINQ().AsParall();
         }
     }
 }
